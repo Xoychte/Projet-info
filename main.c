@@ -1,14 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
+void init (void);
 
-int Height;
-int Width;
+
+
+
+int main(void) {
+
+    init();
+
+    return 0;
+}
 
 void init (void){
+    int Height;
+    int Width;
+
     printf("%s", "donnez la hauteur \n");
     scanf("%d", &Height);
     printf("%s", "donnez la largeur \n");
     scanf("%d", &Width);
+
     char* tableau =(char*)malloc(sizeof(char)*(Height*Width));
     if (tableau == NULL) {
         printf("PROBLEME\n");
@@ -33,16 +45,4 @@ void init (void){
     free(tableau);
 
 
-}
-
-
-int main(void) {
-
-
-
-    init();
-    printf("Hauteur: %d, Largeur: %d\n", Height, Width);
-
-
-    return 0;
 }
