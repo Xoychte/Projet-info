@@ -1,3 +1,0 @@
-F:/PROJ INFO GABRIBENJACORNE/cmake-build-debug/CMakeFiles/PROJ_INFO_GABRIBENJACORNE.dir
-F:/PROJ INFO GABRIBENJACORNE/cmake-build-debug/CMakeFiles/edit_cache.dir
-F:/PROJ INFO GABRIBENJACORNE/cmake-build-debug/CMakeFiles/rebuild_cache.dir
