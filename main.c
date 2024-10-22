@@ -12,11 +12,19 @@ struct Case {
     char background;
 };
 
+struct Bateau {
+    int taille;
+    int id;
+    int x;
+    int y;
+    char orientation;
+};
 
 
 struct Case* init (int Height, int Width);
-struct Case* bateau (struct Case*,int, int);
-struct Case* affiche (struct Case*, int, int);
+struct Case* position (struct Case*, int);
+struct Case* affiche_grille (struct Case*, int, int);
+int placerBateau (struct Case* tableau, struct Bateau barque, int Width );
 void ecrire(struct Case);
 
 
@@ -37,8 +45,8 @@ int main(void) {
     const int Height = 9;
     const int Width = 9;
     struct Case* tableau = init(Height, Width);
-    bateau(tableau,Height, Width);
-
+    position(tableau,Width);
+    affiche_grille(tableau, Height, Width);
     free(tableau);
     return 0;
 }
@@ -54,40 +62,104 @@ struct Case* init (int Height, int Width){
     }
 
     for (int i = 0; i < Height * Width; i++){
-        tableau [i].value = 'A';
-        tableau [i].background = 'r';
+        tableau [i].value = '0';
+        tableau [i].background = 'B';
         tableau [i].couleur = 'B';
     }
 
 
-    affiche(tableau, Height, Width);
+    affiche_grille(tableau, Height, Width);
 
     return tableau;
 
 }
 
-struct Case* bateau(struct Case* tableau, int Height, int Width){
-    int xBateau;
-    int yBateau;
+struct Case* position(struct Case* tableau, int Width){
+    for (int i = 5; i>0 ; i--){
+        printf("%s %d %s","Placez votre premier bateau de taille ", i," avec son x, y et son orientation (h ou v)" );
+        struct Bateau barque = {i,i, };
+        scanf("%d", &(barque.x));
+        scanf("%d", &(barque.y));
+        scanf(" %c", &(barque.orientation));
 
-    scanf("%d", &xBateau);
-    scanf("%d", &yBateau );
-    tableau[(yBateau - 1) * Width + xBateau - 1].background = 'b';
 
-    affiche(tableau, Height, Width);
+        placerBateau(tableau, barque, Width);
+    }
+
+
+
+
+
+
+
+
+
+
     return tableau;
 
 }
 
-struct Case* affiche (struct Case* tableau, int Height, int Width){
-    for (int i = 0; i < Height; i++){
-        for (int j = 0; j < Width; j++){
+struct Case* affiche_grille(struct Case* tableau, int Height, int Width) {
+    printf("%c", 201);  // ╔
+    for (int j = 1; j < Width; j++) {
+        printf("%c%c", 205, 203);  // ═╦
+    }
+    printf("%c%c\n", 205, 187);  // ═╗
+
+    for (int i = 0; i < Height; i++) {
+        if (i != 0) {
+            printf("%c", 204);  // ╠
+            for(int j = 1; j < Width; j++) {
+                printf("%c%c", 205, 206);  // ═╬
+            }
+            printf("%c%c\n", 205, 185);  // ═╣
+        }
+        printf("%c",186); // ║
+        for (int j = 0; j < Width; j++) {
             ecrire(tableau[i * Width + j]);
-
+            printf("%c", 186);  // ║
         }
         printf("\n");
+    }
+    printf("%c", 200);  // ╚
+    for (int j = 1; j < Width; j++) {
+        printf("%c%c", 205, 202);  // ═╩
+    }
+    printf("%c%c\n", 205, 188);  // ═╝
+}
 
-    }}
+int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
+    if (barque.orientation == 'h'){
+        if(barque.x > 0 && barque.x <= (9 - barque.taille) && barque.y > 0 && barque.y <= 9) {
+            for (int i = 0; i < barque.taille; i++) {
+                tableau[(barque.y - 1) * Width + barque.x + i].background = 'b';
+                char value[20];
+                sprintf((char *) value, "%d", barque.id);
+                tableau[(barque.y - 1) * Width + barque.x  + i].value = value[0];
+            }
+
+        }
+        else { printf("ça rentre pas idiot \n");}
+    }
+    else if(barque.orientation == 'v'){
+        if (barque.x > 0 && barque.x <= 9 && (barque.y - barque.taille)> 0  && barque.y <= 9){
+            for (int i = 0; i < barque.taille; i++){
+                tableau[(barque.y - 1 - i) * Width + barque.x - 1].background = 'b';
+                char value[20];
+                sprintf((char *) value, "%d", barque.id);
+                tableau[(barque.y - 1 - i) * Width + barque.x - 1].value = value[0];
+        }
+
+        }
+        else { printf("ça rentre pas idiot \n");}
+
+        }
+    else{
+        printf("Bouffon \n");
+    }
+
+
+    }
 
 
 
