@@ -26,6 +26,10 @@ struct Case* position (struct Case*, int);
 struct Case* affiche_grille (struct Case*, int, int);
 int placerBateau (struct Case* tableau, struct Bateau barque, int Width );
 void ecrire(struct Case);
+struct Bateau demander_coordonnees(int);
+char touche(struct Case*, int, int, int);
+
+
 
 
 
@@ -42,8 +46,8 @@ int main(void) {
     #endif
 
 
-    const int Height = 9;
-    const int Width = 9;
+    const int Height = 10;
+    const int Width = 10;
     struct Case* tableau = init(Height, Width);
     position(tableau,Width);
     affiche_grille(tableau, Height, Width);
@@ -62,9 +66,9 @@ struct Case* init (int Height, int Width){
     }
 
     for (int i = 0; i < Height * Width; i++){
-        tableau [i].value = '0';
-        tableau [i].background = 'B';
-        tableau [i].couleur = 'B';
+        tableau [i].value = '~';
+        tableau [i].background = ' ';
+        tableau [i].couleur = 'b';
     }
 
 
@@ -83,21 +87,14 @@ struct Case* position(struct Case* tableau, int Width){
         affiche_grille(tableau,10,10);
     }
 
-
-
-
-
-
-
-
-
-
     return tableau;
 
 }
 
 struct Case* affiche_grille(struct Case* tableau, int Height, int Width) {
-    printf("%c", 201);  // ╔
+    printf("\033[2J\033[H ");
+    for (int k = 1; k< Width + 1; k++) {printf(" %d",k);}
+    printf("\n %c", 201);  // ╔
     for (int j = 1; j < Width; j++) {
         printf("%c%c", 205, 203);  // ═╦
     }
@@ -105,20 +102,20 @@ struct Case* affiche_grille(struct Case* tableau, int Height, int Width) {
 
     for (int i = 0; i < Height; i++) {
         if (i != 0) {
-            printf("%c", 204);  // ╠
+            printf(" %c", 204);  // ╠
             for(int j = 1; j < Width; j++) {
                 printf("%c%c", 205, 206);  // ═╬
             }
             printf("%c%c\n", 205, 185);  // ═╣
         }
-        printf("%c",186); // ║
+        printf("%c%c",(65 + i), 186); // ║
         for (int j = 0; j < Width; j++) {
             ecrire(tableau[i * Width + j]);
             printf("%c", 186);  // ║
         }
         printf("\n");
     }
-    printf("%c", 200);  // ╚
+    printf(" %c", 200);  // ╚
     for (int j = 1; j < Width; j++) {
         printf("%c%c", 205, 202);  // ═╩
     }
@@ -126,8 +123,10 @@ struct Case* affiche_grille(struct Case* tableau, int Height, int Width) {
 }
 
 int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
+    int taille = barque.taille;
+
     if (barque.orientation == 'h'){
-        if(barque.x > 0 && barque.x <= (9 - barque.taille) && barque.y > 0 && barque.y <= 9) {
+        if(barque.x > 0 && barque.x <= (10 - barque.taille) && barque.y > 0 && barque.y <= 10) {
             for (int i = 0; i < barque.taille; i++) {
                 int position = (barque.y - 1) * Width + barque.x -1 + i;
                 tableau[position].couleur = 'r';
@@ -153,8 +152,8 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
                 tableau[position].couleur = 'r';
                 char value[20];
                 sprintf((char *) value, "%d", barque.id);
-                tableau[(barque.y - 1 - i) * Width + barque.x - 1].value = value[0];
-        }
+                tableau[position].value = value[0];
+            }
 
         } else {
             printf("Le bateau ne rentre pas dans la grille\n");
@@ -176,24 +175,14 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
     }
 
 
-    }
+}
 
 
 
 
 
 void ecrire(struct Case c) {
-    switch (c.couleur) {
-        case 'r':printf("\033[0;31m");break;
-        case 'g':printf("\033[0;32m");break;
-        case 'y':printf("\033[0;33m");break;
-        case 'b':printf("\033[0;34m");break;
-        case 'm':printf("\033[0;35m");break;
-        case 'c':printf("\033[0;36m");break;
-        case 'w':printf("\033[0;37m");break;
-        case 'B':printf("\033[0;30m");break;
-        default:printf("\033[0;30m");break;
-    }
+
     switch (c.background) {
         case 'r':printf("\033[0;41m");break;
         case 'g':printf("\033[0;42m");break;
@@ -202,9 +191,44 @@ void ecrire(struct Case c) {
         case 'm':printf("\033[0;45m");break;
         case 'c':printf("\033[0;46m");break;
         case 'w':printf("\033[0;47m");break;
-        case 'B':printf("\033[0;40m");break;
         default:printf("\033[0;40m");break;
     }
+
+    switch (c.couleur) {
+        case 'r':printf("\033[0;31m");break;
+        case 'g':printf("\033[0;32m");break;
+        case 'y':printf("\033[0;33m");break;
+        case 'b':printf("\033[0;34m");break;
+        case 'm':printf("\033[0;35m");break;
+        case 'c':printf("\033[0;36m");break;
+        case 'w':printf("\033[0;37m");break;
+        default:printf("\033[0;30m");break;
+    }
+
     printf("%c", c.value);
     printf("\033[0m");
+}
+
+struct Bateau demander_coordonnees(int taille) {
+    printf("%s %d %s","Placez votre bateau de taille ", taille," avec son x, y et son orientation (h ou v)" );
+    struct Bateau barque = {taille,taille, };
+    char Y;
+    scanf(" %c", &Y);
+    scanf("%d", &(barque.x));
+
+    barque.y = (int)Y - 64;
+
+    scanf(" %c", &(barque.orientation));
+    return barque;
+}
+
+
+char touche(struct Case* tableau,int y, int x,int Width){
+    if (tableau[y * Width + x].value != '~'){
+        return ('t');
+    }
+    else{
+        return ('f');
+    }
+
 }
