@@ -75,15 +75,12 @@ struct Case* init (int Height, int Width){
 }
 
 struct Case* position(struct Case* tableau, int Width){
+
     for (int i = 5; i>0 ; i--){
-        printf("%s %d %s","Placez votre premier bateau de taille ", i," avec son x, y et son orientation (h ou v)" );
-        struct Bateau barque = {i,i, };
-        scanf("%d", &(barque.x));
-        scanf("%d", &(barque.y));
-        scanf(" %c", &(barque.orientation));
 
+        placerBateau(tableau,demander_coordonnees(i),Width);
 
-        placerBateau(tableau, barque, Width);
+        affiche_grille(tableau,10,10);
     }
 
 
@@ -132,30 +129,50 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
     if (barque.orientation == 'h'){
         if(barque.x > 0 && barque.x <= (9 - barque.taille) && barque.y > 0 && barque.y <= 9) {
             for (int i = 0; i < barque.taille; i++) {
-                tableau[(barque.y - 1) * Width + barque.x + i].background = 'b';
+                int position = (barque.y - 1) * Width + barque.x -1 + i;
+                tableau[position].couleur = 'r';
                 char value[20];
                 sprintf((char *) value, "%d", barque.id);
-                tableau[(barque.y - 1) * Width + barque.x  + i].value = value[0];
+                tableau[position].value = value[0];
             }
 
         }
-        else { printf("ça rentre pas idiot \n");}
-    }
-    else if(barque.orientation == 'v'){
-        if (barque.x > 0 && barque.x <= 9 && (barque.y - barque.taille)> 0  && barque.y <= 9){
-            for (int i = 0; i < barque.taille; i++){
-                tableau[(barque.y - 1 - i) * Width + barque.x - 1].background = 'b';
+        else {
+
+            printf("Le bateau ne rentre pas dans la grille\n");
+            struct Bateau nouvelEssai;
+            nouvelEssai = demander_coordonnees(taille);
+            placerBateau(tableau, nouvelEssai, Width);
+
+        }
+
+    } else if(barque.orientation == 'v') {
+        if (barque.x > 0 && barque.x <= 10 && (barque.y - barque.taille)> 0  && barque.y <= 10) {
+            for (int i = 0; i < barque.taille; i++) {
+                int position  = (barque.y - 1 - i) * Width + barque.x - 1;
+                tableau[position].couleur = 'r';
                 char value[20];
                 sprintf((char *) value, "%d", barque.id);
                 tableau[(barque.y - 1 - i) * Width + barque.x - 1].value = value[0];
         }
 
-        }
-        else { printf("ça rentre pas idiot \n");}
+        } else {
+            printf("Le bateau ne rentre pas dans la grille\n");
+            struct Bateau nouvelEssai;
+            nouvelEssai = demander_coordonnees(taille);
+            placerBateau(tableau, nouvelEssai, Width);
 
         }
-    else{
-        printf("Bouffon \n");
+
+
+
+
+    } else {
+        printf("L'orientation n'est pas correcte (ecrire h ou v en minuscule)\n");
+        struct Bateau nouvelEssai;
+        nouvelEssai = demander_coordonnees(taille);
+        placerBateau(tableau, nouvelEssai, Width);
+
     }
 
 
