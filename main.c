@@ -23,8 +23,8 @@ struct Bateau {
 
 struct Case* init (int Height, int Width);
 struct Case* position (struct Case*, int);
-struct Case* affiche_grille (struct Case*, int, int);
-int placerBateau (struct Case* tableau, struct Bateau barque, int Width );
+void affiche_grille (const struct Case*, int, int);
+void placerBateau (struct Case* tableau, struct Bateau barque, int Width );
 void ecrire(struct Case);
 struct Bateau demander_coordonnees(int);
 char touche(struct Case*, int, int, int);
@@ -65,7 +65,7 @@ struct Case* init (int Height, int Width){
 
 
 
-    struct Case* tableau =(struct Case*)malloc(sizeof(struct Case)*(Height*Width));
+    struct Case* tableau = malloc(sizeof(struct Case)*(Height*Width));
     if (tableau == NULL) {
         printf("PROBLEME\n");
         exit(EXIT_FAILURE);
@@ -98,7 +98,7 @@ struct Case* position(struct Case* tableau, int Width){
 
 }
 
-struct Case* affiche_grille(struct Case* tableau, int Height, int Width) {
+void affiche_grille(const struct Case* tableau, int Height, int Width) {
     printf("\033[2J\033[H ");
     for (int k = 1; k< Width + 1; k++) {printf(" %d",k);}
     printf("\n %c", 201);  // ╔
@@ -129,8 +129,7 @@ struct Case* affiche_grille(struct Case* tableau, int Height, int Width) {
     printf("%c%c\n", 205, 188);  // ═╝
 }
 
-int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
-    int taille = barque.taille;
+void placerBateau (struct Case* tableau, const struct Bateau barque, const int Width ){
 
     if (barque.orientation == 'h'){
         if(barque.x > 0 && barque.x <= (10 - barque.taille) && barque.y > 0 && barque.y <= 10) {
@@ -146,14 +145,13 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
         else {
 
             printf("Le bateau ne rentre pas dans la grille\n");
-            struct Bateau nouvelEssai;
-            nouvelEssai = demander_coordonnees(taille);
+            struct Bateau nouvelEssai = demander_coordonnees(barque.taille);
             placerBateau(tableau, nouvelEssai, Width);
 
         }
 
     } else if(barque.orientation == 'v') {
-        if (barque.x > 0 && barque.x <= 10 && (barque.y - barque.taille)> 0  && barque.y <= 10) {
+        if (barque.x > 0 && barque.x <= 10 && (barque.y - barque.taille)>= 0  && barque.y <= 10) {
             for (int i = 0; i < barque.taille; i++) {
                 int position  = (barque.y - 1 - i) * Width + barque.x - 1;
                 tableau[position].couleur = 'r';
@@ -164,8 +162,7 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
 
         } else {
             printf("Le bateau ne rentre pas dans la grille\n");
-            struct Bateau nouvelEssai;
-            nouvelEssai = demander_coordonnees(taille);
+            struct Bateau nouvelEssai =demander_coordonnees(barque.taille);
             placerBateau(tableau, nouvelEssai, Width);
 
         }
@@ -175,8 +172,7 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){
 
     } else {
         printf("L'orientation n'est pas correcte (ecrire h ou v en minuscule)\n");
-        struct Bateau nouvelEssai;
-        nouvelEssai = demander_coordonnees(taille);
+        struct Bateau nouvelEssai = demander_coordonnees(barque.taille);
         placerBateau(tableau, nouvelEssai, Width);
 
     }
@@ -221,7 +217,10 @@ struct Bateau demander_coordonnees(int taille) {
     struct Bateau barque = {taille,taille, };
     char Y;
     scanf(" %c", &Y);
-    scanf("%d", &(barque.x));
+
+    char X;
+    scanf(" %c", &X);
+    barque.x = X - '0';
 
     barque.y = (int)Y - 64;
 
@@ -230,16 +229,13 @@ struct Bateau demander_coordonnees(int taille) {
 }
 
 
-char touche(struct Case* tableau,int y, int x,int Width){
-    int position = (y-1) * Width + (x-1);
-    if (tableau[position].value == '~'){
-        tableau[position].value = 'x';
-        tableau[position].couleur = 'w';
+char touche(struct Case* tableau, const int y, const int x, const int Width){
+    const int position = (y-1) * Width + (x-1);
+    tableau[position].value = 'X';
+    if (tableau[position].value == '~') {
+        tableau[position].couleur = 'b';
         return ('f');
-    }
-    else{
-
-        tableau[position].value = 'x';
+    } else {
         tableau[position].couleur = 'r';
         return ('t');
     }
