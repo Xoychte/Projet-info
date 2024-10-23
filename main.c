@@ -51,6 +51,12 @@ int main(void) {
     struct Case* tableau = init(Height, Width);
     position(tableau,Width);
     affiche_grille(tableau, Height, Width);
+
+    printf("%c\n",touche(tableau, 2, 2, Width));
+    affiche_grille(tableau, Height, Width);
+    touche(tableau, 3, 3, Width);
+    affiche_grille(tableau, Height, Width);
+
     free(tableau);
     return 0;
 }
@@ -85,6 +91,7 @@ struct Case* position(struct Case* tableau, int Width){
         placerBateau(tableau,demander_coordonnees(i),Width);
 
         affiche_grille(tableau,10,10);
+
     }
 
     return tableau;
@@ -224,11 +231,17 @@ struct Bateau demander_coordonnees(int taille) {
 
 
 char touche(struct Case* tableau,int y, int x,int Width){
-    if (tableau[y * Width + x].value != '~'){
-        return ('t');
+    int position = (y-1) * Width + (x-1);
+    if (tableau[position].value == '~'){
+        tableau[position].value = 'x';
+        tableau[position].couleur = 'w';
+        return ('f');
     }
     else{
-        return ('f');
+
+        tableau[position].value = 'x';
+        tableau[position].couleur = 'r';
+        return ('t');
     }
 
 }
