@@ -23,11 +23,12 @@ struct Bateau {
 struct Case* init (int Height, int Width);
 struct Case* position (struct Case*, int);
 void affiche_grille (struct Case*, int, int);
-int placerBateau (struct Case* tableau, struct Bateau barque, int Width );
+void placerBateau (struct Case* tableau, struct Bateau barque, int Width );
 void ecrire(struct Case);
 struct Bateau demander_coordonnees(int);
 char touche(struct Case*, int, int, int);
 int verifier_placement_horizontal(struct Case*, int, int ,int);
+int verifier_placement_vertical(struct Case*, int, int ,int);
 struct Case regarder_case(struct Case*, int, int, int);
 
 
@@ -51,10 +52,12 @@ int main(void) {
     position(tableau,Width);
     affiche_grille(tableau, Height, Width);
 
-    printf("%c\n",touche(tableau, 2, 2, Width));
+    touche(tableau, 2, 3, Width);
     affiche_grille(tableau, Height, Width);
     touche(tableau, 3, 3, Width);
     affiche_grille(tableau, Height, Width);
+    touche(tableau,1,3,Width);
+    affiche_grille(tableau,Height,Width);
 
     free(tableau);
     return 0;
@@ -128,66 +131,11 @@ void affiche_grille(struct Case* tableau, int Height, int Width) {
     printf("%c%c\n", 205, 188);  // ═╝
 }
 
-int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){  //depassement en dehors de la grille
+void placerBateau (struct Case* tableau, struct Bateau barque, int Width ){  //depassement en dehors de la grille
     int taille = barque.taille;
 
-    /*
-    if (barque.orientation == 'h'){
-
-        for (int i = 0; i < barque.taille; i++) {
-
-            if (regarder_case(tableau,barque.x,barque.y,Width) != '~') {
-                printf("Le bateau chevauche un autre bateau \n");
-
-                struct Bateau nouvelEssai;
-                nouvelEssai = demander_coordonnees(taille);
-                placerBateau(tableau, nouvelEssai, Width);
-                return 0;
-            }
-        }
-
-        for (int i = -1; i < (barque.taille + 1); i++) {
-            for (int j = -1 ; j < 2; j++){
-                int position = (barque.y - 1 + j) * Width + barque.x - 1 + i;
-                if (tableau[position].value != '~') {
-
-                    printf("Le bateau est trop proche d'un autre \n");
-
-                    struct Bateau nouvelEssai;
-                    nouvelEssai = demander_coordonnees(taille);
-                    placerBateau(tableau, nouvelEssai, Width);
-                    return 0;
-
-                }
-
-
-            }
-
-        }
-
-
-        if(barque.x > 0 && barque.x <= (10 - barque.taille) && barque.y > 0 && barque.y <= 10) {
-            for (int i = 0; i < barque.taille; i++) {
-                int position = (barque.y - 1) * Width + barque.x -1 + i;
-                tableau[position].couleur = 'r';
-                char value[20];
-                sprintf((char *) value, "%d", barque.id);
-                tableau[position].value = value[0];
-            }
-
-        }
-        else {
-
-            printf("Le bateau ne rentre pas dans la grille\n");
-            struct Bateau nouvelEssai;
-            nouvelEssai = demander_coordonnees(taille);
-            placerBateau(tableau, nouvelEssai, Width);
-
-        }
-        */
 
     if (barque.orientation == 'h') {
-        printf("%d %d \n", barque.x, barque.y);
         if (verifier_placement_horizontal(tableau,taille,barque.x,barque.y) == 1){
             for (int i = 0; i < barque.taille; i++) {
                 int position = (barque.y - 1) * Width + barque.x - 1 + i;
@@ -204,58 +152,19 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){  //de
 
     } else if(barque.orientation == 'v') {
 
-        for (int i = 0; i < barque.taille; i++) {
-            int position = (barque.y - 1 - i) * Width + barque.x - 1;
-
-            if (tableau[position].value != '~') {
-                printf("Le bateau chevauche un autre bateau \n");
-
-                struct Bateau nouvelEssai;
-                nouvelEssai = demander_coordonnees(taille);
-                placerBateau(tableau, nouvelEssai, Width);
-                return 0;
-            }
-        }
-
-
-        for (int i = -1; i < (barque.taille + 1); i++) {
-            for (int j = -1 ; j < 2; j++){
-                int position = (barque.y - 1 - i) * Width + barque.x - 1 + j;
-                if (tableau[position].value != '~') {
-
-                    printf("Le bateau est trop proche d'un autre \n");
-
-                    struct Bateau nouvelEssai;
-                    nouvelEssai = demander_coordonnees(taille);
-                    placerBateau(tableau, nouvelEssai, Width);
-                    return 0;
-
-                }
-
-
-            }
-
-        }
-
-
-        if (barque.x > 0 && barque.x <= 10 && (barque.y - barque.taille)> 0  && barque.y <= 10) {
+        if (verifier_placement_vertical(tableau,taille,barque.x,barque.y) == 1) {
             for (int i = 0; i < barque.taille; i++) {
-                int position  = (barque.y - 1 - i) * Width + barque.x - 1;
+                int position = (barque.y - 1 - i) * Width + barque.x - 1;
                 tableau[position].couleur = 'r';
                 char value[20];
                 sprintf((char *) value, "%d", barque.id);
                 tableau[position].value = value[0];
             }
-
-        } else {
-            printf("Le bateau ne rentre pas dans la grille\n");
-            struct Bateau nouvelEssai;
-            nouvelEssai = demander_coordonnees(taille);
-            placerBateau(tableau, nouvelEssai, Width);
-
         }
-
-
+        else {
+            struct Bateau nouvelEssai = demander_coordonnees(taille);
+            placerBateau(tableau,nouvelEssai,Width);
+        }
 
 
     } else {
@@ -274,7 +183,7 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){  //de
 
 
 void ecrire(struct Case c) {
-    // Background color
+    //Couleur de fond
     const char* bg_code;
     switch (c.background) {
         case 'r': bg_code = "\033[0;41m"; break;
@@ -287,7 +196,7 @@ void ecrire(struct Case c) {
         default:  bg_code = "\033[0;40m"; break;
     }
 
-    // Text color
+    //Couleur du texte
     const char* text_code;
     switch (c.couleur) {
         case 'r': text_code = "\033[0;31m"; break;
@@ -300,7 +209,7 @@ void ecrire(struct Case c) {
         default:  text_code = "\033[0;30m"; break;
     }
 
-    // Print character with colors and reset
+    //Print les caractères et remise à zéro
     printf("%s%s%c\033[0m", bg_code, text_code, c.value);
 }
 
@@ -320,46 +229,72 @@ struct Bateau demander_coordonnees(int taille) {
 
 char touche(struct Case* tableau,int y, int x,int Width){
     int position = (y-1) * Width + (x-1);
-    if (tableau[position].value == '~'){
-        tableau[position].value = 'x';
-        tableau[position].couleur = 'w';
-        return ('f');
-    }
-    else{
+    if (position < Width * Width && !(x <= 0 || x > 10 || y <= 0 || y > 10)){
 
-        tableau[position].value = 'x';
-        tableau[position].couleur = 'r';
-        return ('t');
-    }
+        if (tableau[position].value == '~'){
+            tableau[position].value = 'x';
+            tableau[position].couleur = 'w';
+            printf("Plouf");
+            return ('p');
+        }
+        else{
 
+            int compteur = 0;
+            for (int i = 0; i < Width * Width; i++) {
+                if (tableau[i].value == tableau[position].value) {
+                    compteur += 1;
+                }
+
+                if (compteur == 1) {
+                    printf("Coule");
+                    return("c");
+                }
+
+
+
+
+                tableau[position].value = 'x';
+                tableau[position].couleur = 'r';
+                printf("Touche");
+                return ('t');
+            }
+
+
+        }
+    }
+    else {
+        printf("Hors de la grille");
+        return ('g');
+    }
 }
+
 
 int verifier_placement_horizontal(struct Case* tableau,int taille, int x, int y) {
     int resultat = 1;
-    if (x <= 0 || x > (10 - taille) || y <= 0 || y > 10) {
-        printf("Le bateau ne rentre pas dans la grille !");
+    if (x <= 0 || x > (11 - taille) || y <= 0 || y > 10) { // On vérifie que le bateau peut rentrer dans la grille
+        printf("Le bateau ne rentre pas dans la grille ! \n");
         resultat = 0;
     } else {
 
-        for (int i = 0; i < taille; i++) {
+        for (int i = 0; i < taille; i++) { // On parcoure la zone supposée remplie par le bateau
             if (regarder_case(tableau,x + i,y,10).couleur == 'r') {
-                printf("%s %c %d \n","Le bateau en chevauche un autre en: ",(char)(y+65),x+1);
+                printf("%s %c %d \n","Le bateau en chevauche un autre en: ",(char)(y+64),x+i);
                 resultat = 0;
             }
         }
         int Xmin = -1;
-        int Xmax = x + taille - 1;
+        int Xmax = x + taille;
         if (x == 1) { Xmin = 0;}
-        else if (x == 10 - (taille - 1)) { Xmax = x + taille - 2;}
+        else if (x == 10 - (taille - 1)) { Xmax = x + taille - 1;}
 
         int Ymin = -1;
         int Ymax = 1;
         if (y == 1){Ymin =0;}
-        else if (y == 9) { Ymax = 0;}
+        else if (y == 10) { Ymax = 0;}
 
         for (int i = Xmin; i <= Xmax; i++) {
             for (int j = Ymin; j <= Ymax; j++) {
-                if (regarder_case(tableau,x + i,y + j,10).value != '~') {
+                if (regarder_case(tableau,x + i,y + j,10).couleur == 'r') {
                     printf("Le bateau est trop proche d'un autre \n");
                     resultat = 0;
                 }
@@ -374,7 +309,46 @@ int verifier_placement_horizontal(struct Case* tableau,int taille, int x, int y)
     return resultat;
 }
 
+int verifier_placement_vertical(struct Case* tableau,int taille, int x, int y) {
+    int resultat = 1;
+    if (x <= 0 || x > 10 || y < taille || y > 10) {
+        printf("Le bateau ne rentre pas dans la grille");
+        resultat = 0;
+    }
 
+    else {
+        for (int i = 0; i < taille; i++) {
+            if (regarder_case(tableau,x,y - i,10).couleur == 'r') {
+                printf("%s %c %d \n","Le bateau en chevauche un autre en : ",(char)(y + 64 - i), x);
+                resultat = 0;
+
+            }
+        }
+
+        int Xmin = -1;
+        int Xmax;
+        switch (x) {
+            case 1:Xmin = 0; break;
+            case 10:Xmax = 0; break;
+            default:Xmax = 1; break;
+        }
+
+        int Ymin = -1;
+        if (y == 1){Ymin =0;}
+        int Ymax = y - taille;
+        if (y == 10){Ymax = y + taille - 1;}
+        for (int i = Xmin; i <= Xmax; i++) {
+            for (int j = Ymin; j <= Ymax; j++) {
+                if (regarder_case(tableau,x + i,y + j,10).couleur == 'r') {
+                    printf("Le bateau est trop proche d'un autre");
+                    resultat = 0;
+                }
+            }
+        }
+
+    }
+    return resultat;
+}
 
 struct Case regarder_case(struct Case* tableau, int x, int y, int tailleGrille){
     int position = (y - 1) * tailleGrille + (x - 1);
