@@ -48,18 +48,23 @@ int main(void) {
 
     const int Height = 10;
     const int Width = 10;
-    struct Case* tableau = init(Height, Width);
-    position(tableau,Width);
-    affiche_grille(tableau, Height, Width);
+    struct Case* grille_joueur_1 = init(Height, Width);
+    printf("Au premier joueur de placer ses bateaux\n");
+    position(grille_joueur_1,Width);
 
-    touche(tableau, 2, 3, Width);
-    affiche_grille(tableau, Height, Width);
-    touche(tableau, 3, 3, Width);
-    affiche_grille(tableau, Height, Width);
-    touche(tableau,1,3,Width);
-    affiche_grille(tableau,Height,Width);
+    struct Case* grille_joueur_2 = init(Height, Width);
+    printf("Au second joueur de placer ses bateaux\n");
+    position(grille_joueur_2,Width);
 
-    free(tableau);
+    touche(grille_joueur_1, 2, 3, Width);
+    affiche_grille(grille_joueur_1, Height, Width);
+    touche(grille_joueur_1, 3, 3, Width);
+    affiche_grille(grille_joueur_1, Height, Width);
+    touche(grille_joueur_1,1,3,Width);
+    affiche_grille(grille_joueur_1,Height,Width);
+
+    free(grille_joueur_1);
+    free(grille_joueur_2);
     return 0;
 }
 
@@ -229,13 +234,14 @@ struct Bateau demander_coordonnees(int taille) {
 
 char touche(struct Case* tableau,int y, int x,int Width){
     int position = (y-1) * Width + (x-1);
+    char resultat;
     if (position < Width * Width && !(x <= 0 || x > 10 || y <= 0 || y > 10)){
 
         if (tableau[position].value == '~'){
             tableau[position].value = 'x';
             tableau[position].couleur = 'w';
             printf("Plouf");
-            return ('p');
+            resultat ='p';
         }
         else{
 
@@ -244,28 +250,28 @@ char touche(struct Case* tableau,int y, int x,int Width){
                 if (tableau[i].value == tableau[position].value) {
                     compteur += 1;
                 }
-
-                if (compteur == 1) {
-                    printf("Coule");
-                    return("c");
-                }
-
-
-
-
-                tableau[position].value = 'x';
-                tableau[position].couleur = 'r';
-                printf("Touche");
-                return ('t');
             }
+            if (compteur == 1) {
+                printf("Coule");
+                resultat = 'c';
+            } else {
+                printf("Touche");
+                resultat = 't';
+            }
+
+            tableau[position].value = 'x';
+            tableau[position].couleur = 'r';
+
+
 
 
         }
     }
     else {
         printf("Hors de la grille");
-        return ('g');
+        resultat ='g';
     }
+    return resultat;
 }
 
 
