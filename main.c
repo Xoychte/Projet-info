@@ -283,9 +283,9 @@ int verifier_placement_horizontal(struct Case* tableau,int taille, int x, int y)
             }
         }
         int Xmin = -1;
-        int Xmax = x + taille;
+        int Xmax = taille;
         if (x == 1) { Xmin = 0;}
-        else if (x == 10 - (taille - 1)) { Xmax = x + taille - 1;}
+        else if (x == 10 - (taille - 1)) { Xmax = taille - 1;}
 
         int Ymin = -1;
         int Ymax = 1;
@@ -335,8 +335,8 @@ int verifier_placement_vertical(struct Case* tableau,int taille, int x, int y) {
 
         int Ymin = -1;
         if (y == 1){Ymin =0;}
-        int Ymax = y - taille;
-        if (y == 10){Ymax = y + taille - 1;}
+        int Ymax = taille;
+        if (y == 10){Ymax = taille - 1;}
         for (int i = Xmin; i <= Xmax; i++) {
             for (int j = Ymin; j <= Ymax; j++) {
                 if (regarder_case(tableau,x + i,y + j,10).couleur == 'r') {
@@ -353,7 +353,7 @@ int verifier_placement_vertical(struct Case* tableau,int taille, int x, int y) {
 struct Case regarder_case(struct Case* tableau, int x, int y, int tailleGrille){
     int position = (y - 1) * tailleGrille + (x - 1);
     struct Case resultat;
-    if (position > tailleGrille * tailleGrille) {
+    if (position > tailleGrille * tailleGrille || x - 1 > tailleGrille || y - 1 > tailleGrille || x -1 < 0 || y - 1 < 0) {
         resultat = (struct Case){'a','a','a'};
     } else {
         resultat = tableau[position];
