@@ -5,7 +5,6 @@
 #endif
 
 
-
 struct Case {
     char value;
     char couleur;
@@ -23,13 +22,13 @@ struct Bateau {
 
 struct Case* init (int Height, int Width);
 struct Case* position (struct Case*, int);
-struct Case* affiche_grille (struct Case*, int, int);
+void affiche_grille (struct Case*, int, int);
 int placerBateau (struct Case* tableau, struct Bateau barque, int Width );
 void ecrire(struct Case);
 struct Bateau demander_coordonnees(int);
 char touche(struct Case*, int, int, int);
-
-
+int verifier_placement_horizontal(struct Case*, int, int ,int);
+struct Case regarder_case(struct Case*, int, int, int);
 
 
 
@@ -98,7 +97,7 @@ struct Case* position(struct Case* tableau, int Width){
 
 }
 
-struct Case* affiche_grille(struct Case* tableau, int Height, int Width) {
+void affiche_grille(struct Case* tableau, int Height, int Width) {
     printf("\033[2J\033[H ");
     for (int k = 1; k< Width + 1; k++) {printf(" %d",k);}
     printf("\n %c", 201);  // ╔
@@ -132,13 +131,12 @@ struct Case* affiche_grille(struct Case* tableau, int Height, int Width) {
 int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){  //depassement en dehors de la grille
     int taille = barque.taille;
 
-
+    /*
     if (barque.orientation == 'h'){
 
         for (int i = 0; i < barque.taille; i++) {
-            int position = (barque.y - 1) * Width + barque.x - 1 + i;
 
-            if (tableau[position].value != '~') {
+            if (regarder_case(tableau,barque.x,barque.y,Width) != '~') {
                 printf("Le bateau chevauche un autre bateau \n");
 
                 struct Bateau nouvelEssai;
@@ -186,6 +184,23 @@ int placerBateau (struct Case* tableau, struct Bateau barque, int Width ){  //de
             placerBateau(tableau, nouvelEssai, Width);
 
         }
+        */
+
+    if (barque.orientation == 'h') {
+        printf("%d %d \n", barque.x, barque.y);
+        if (verifier_placement_horizontal(tableau,taille,barque.x,barque.y) == 1){
+            for (int i = 0; i < barque.taille; i++) {
+                int position = (barque.y - 1) * Width + barque.x - 1 + i;
+                tableau[position].couleur = 'r';
+                char valeur[20];
+                sprintf((char *) valeur, "%d",barque.id);
+                tableau[position].value = valeur[0];
+            }
+
+    } else {
+        struct Bateau nouvelEssai = demander_coordonnees(taille);
+        placerBateau(tableau,nouvelEssai,Width);
+    }
 
     } else if(barque.orientation == 'v') {
 
@@ -317,4 +332,58 @@ char touche(struct Case* tableau,int y, int x,int Width){
         return ('t');
     }
 
+}
+
+int verifier_placement_horizontal(struct Case* tableau,int taille, int x, int y) {
+    int resultat = 1;
+    if (x <= 0 || x > (10 - taille) || y <= 0 || y > 10) {
+        printf("Le bateau ne rentre pas dans la grille !");
+        resultat = 0;
+    } else {
+
+        for (int i = 0; i < taille; i++) {
+            if (regarder_case(tableau,x + i,y,10).couleur == 'r') {
+                printf("%s %c %d \n","Le bateau en chevauche un autre en: ",(char)(y+65),x+1);
+                resultat = 0;
+            }
+        }
+        int Xmin = -1;
+        int Xmax = x + taille - 1;
+        if (x == 1) { Xmin = 0;}
+        else if (x == 10 - (taille - 1)) { Xmax = x + taille - 2;}
+
+        int Ymin = -1;
+        int Ymax = 1;
+        if (y == 1){Ymin =0;}
+        else if (y == 9) { Ymax = 0;}
+
+        for (int i = Xmin; i <= Xmax; i++) {
+            for (int j = Ymin; j <= Ymax; j++) {
+                if (regarder_case(tableau,x + i,y + j,10).value != '~') {
+                    printf("Le bateau est trop proche d'un autre \n");
+                    resultat = 0;
+                }
+
+            }
+        }
+
+
+
+    }
+
+    return resultat;
+}
+
+
+
+struct Case regarder_case(struct Case* tableau, int x, int y, int tailleGrille){
+    int position = (y - 1) * tailleGrille + (x - 1);
+    struct Case resultat;
+    if (position > tailleGrille * tailleGrille) {
+        resultat = (struct Case){'a','a','a'};
+    } else {
+        resultat = tableau[position];
+    }
+
+    return resultat;
 }
