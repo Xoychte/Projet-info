@@ -216,12 +216,12 @@ void ecrire(const struct Case c) { //Cette fonction permet d'écrire les caract�
 struct Bateau demander_coordonnees(int taille) { // Cette fonction demande au joueur de donner des coordonnées pour un bateau d'une taille donnée et son orientation
     printf("%s %d %s","Placez votre bateau de taille ", taille," avec son y, son x et son orientation (h ou v)" );
     struct Bateau barque = {taille,taille, };
-    char X;
+    int X;
     char Y;
 
     scanf(" %c", &Y);
-    scanf(" %c", &X);
-    barque.x = (int)X - 48;
+    scanf(" %d", &X);
+    barque.x = X;
     barque.y = (int)Y - 64;
 
     scanf(" %c", &(barque.orientation));
@@ -343,7 +343,7 @@ int verifier_placement_vertical(struct Case* tableau,int taille, int x, int y) {
         if (y == 10){Ymax = taille - 1;}
         for (int i = Xmin; i <= Xmax; i++) {
             for (int j = Ymin; j <= Ymax; j++) {
-                if (regarder_case(tableau,x + i,y + j,10).couleur == 'r') {
+                if (regarder_case(tableau,x + i,y - j,10).couleur == 'r') {
                     printf("Le bateau est trop proche d'un autre");
                     resultat = 0;
                 }
