@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2024.2.2\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\PROJ_INFO_GABRIBENJACORNE.dir/objects.a
+"C:\PROGRA~1\JetBrains\CLion 2024.2.2\bin\mingw\bin\ar.exe" qc CMakeFiles\PROJ_INFO_GABRIBENJACORNE.dir/objects.a @CMakeFiles\PROJ_INFO_GABRIBENJACORNE.dir\objects1.rsp
+"C:\PROGRA~1\JetBrains\CLion 2024.2.2\bin\mingw\bin\gcc.exe" -g -Wl,--whole-archive CMakeFiles\PROJ_INFO_GABRIBENJACORNE.dir/objects.a -Wl,--no-whole-archive -o PROJ_INFO_GABRIBENJACORNE.exe -Wl,--out-implib,libPROJ_INFO_GABRIBENJACORNE.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\PROJ_INFO_GABRIBENJACORNE.dir\linkLibs.rsp
