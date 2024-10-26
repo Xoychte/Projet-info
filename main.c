@@ -139,19 +139,19 @@ void placerBateau (struct Case* tableau, struct Bateau bateau, const int Width )
     if (bateau.orientation == 'h') {
         if (verifier_placement_horizontal(tableau,bateau.taille,bateau.x,bateau.y) == 1){
             for (int i = 0; i < bateau.taille; i++) {
-                int position = (bateau.y - 1) * Width + bateau.x - 1 + i;
+                int position = (bateau.y - 1) * Width + bateau.x - 1 + i;       // Décalage de 1 par choix (grille de 1 à 10 et non de 0 à 9)
                 tableau[position].couleur = 'r';
                 char valeur[20];
                 sprintf((char *) valeur, "%d",bateau.id);
                 tableau[position].value = valeur[0];
             }
 
-    } else {
-        struct Bateau nouvelEssai = demander_coordonnees(bateau.taille);
-        placerBateau(tableau,nouvelEssai,Width);
-    }
+        } else {
+            struct Bateau nouvelEssai = demander_coordonnees(bateau.taille);        // Gestion des erreurs d'entrées de l'utilisateur
+            placerBateau(tableau,nouvelEssai,Width);
+        }
 
-    } else if(bateau.orientation == 'v') {
+    } else if(bateau.orientation == 'v') {      //Pareil qu'au dessus mais quand l'orientation est verticale
 
         if (verifier_placement_vertical(tableau,bateau.taille,bateau.x,bateau.y) == 1) {
             for (int i = 0; i < bateau.taille; i++) {
@@ -169,7 +169,7 @@ void placerBateau (struct Case* tableau, struct Bateau bateau, const int Width )
 
 
     } else {
-        printf("L'orientation n'est pas correcte (ecrire h ou v en minuscule)\n");
+        printf("L'orientation n'est pas correcte (ecrire h ou v en minuscule)\n");      // Gestion des erreurs d'entrées de l'utilisateur
         struct Bateau nouvelEssai = demander_coordonnees(bateau.taille);
         placerBateau(tableau, nouvelEssai, Width);
 
@@ -229,10 +229,10 @@ struct Bateau demander_coordonnees(int taille) { // Cette fonction demande au jo
 }
 
 
-char tirer(struct Case* tableau,int y, int x,int Width){
+char tirer(struct Case* tableau,int y, int x,int Width){                // Fonction determinant si le tir touche, plouf ou coule le bateau (et modifie la grille en conséquence)
     int position = (y-1) * Width + (x-1);
     char resultat;
-    if (position < Width * Width && !(x <= 0 || x > 10 || y <= 0 || y > 10)){
+    if (position < Width * Width && !(x <= 0 || x > 10 || y <= 0 || y > 10)){   // Verifie que le tir est dans la grille
 
         if (tableau[position].value == '~'){
             tableau[position].value = 'x';
@@ -243,7 +243,7 @@ char tirer(struct Case* tableau,int y, int x,int Width){
         else{
 
             int compteur = 0;
-            for (int i = 0; i < Width * Width; i++) {
+        for (int i = 0; i < Width * Width; i++) {               //permet de déterminer si il reste des cases sur lesquelles le bateau n'est pas encore touché
                 if (tableau[i].value == tableau[position].value) {
                     compteur += 1;
                 }
