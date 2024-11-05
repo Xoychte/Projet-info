@@ -79,7 +79,7 @@ struct Case* init (int Height, int Width){ // Sert à initialiser une nouvelle g
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < Height * Width; i++){ // On remplit le tableau de ~ bleu sur fond normal représentant l'eau
+    for (int i = 0; i < Height * Width; i++){ // On remplis le tableau de ~ bleu sur fond normal représentant l'eau
         tableau [i].value = '~';
         tableau [i].background = ' ';
         tableau [i].couleur = 'b';
@@ -103,6 +103,7 @@ void mise_en_place_bateaux(struct Case* tableau, int Width){ //Sert à faire pla
 }
 
 void affiche_grille(struct Case* tableau, int Height, int Width) {
+#ifdef _WIN32
     printf("\033[2J\033[H "); //On efface tout le terminal et on replace le curseur au début
     for (int k = 1; k< Width + 1; k++) {printf(" %d",k);} // On affiche les nombres indicants les colonnes
     printf("\n %c", 201);  // ╔
@@ -131,6 +132,52 @@ void affiche_grille(struct Case* tableau, int Height, int Width) {
         printf("%c%c", 205, 202);  // ═╩
     }
     printf("%c%c\n", 205, 188);  // ═╝
+
+#else
+
+
+
+
+
+    printf("\033[2J\033[H");
+
+
+    for (int k = 1; k < Width + 1; k++) {
+        printf(" %d", k);
+    }
+
+
+    printf("\n ┌");
+    for (int j = 1; j < Width; j++) {
+        printf("─┬");
+    }
+    printf("─┐\n");
+
+    // Grid content
+    for (int i = 0; i < Height; i++) {
+        if (i != 0) {
+            printf(" ├");
+            for(int j = 1; j < Width; j++) {
+                printf("─┼");
+            }
+            printf("─┤\n");
+        }
+
+        printf("%c│", (65 + i));
+        for (int j = 0; j < Width; j++) {
+            ecrire(tableau[i * Width + j]);
+            printf("│");
+        }
+        printf("\n");
+    }
+
+
+    printf(" └");
+    for (int j = 1; j < Width; j++) {
+        printf("─┴");
+    }
+    printf("─┘\n");
+#endif
 }
 
 
